@@ -119,15 +119,15 @@ class Game extends Component {
   render() {
     return (
       <div className="box">
-        <div
-          className="snake"
-          style={{
-            top: this.state.snakePos[0][0],
-            left: this.state.snakePos[0][1]
-          }}
-        >
-          {" "}
-        </div>{" "}
+      {this.state.snakePos.map((sp, i) => {
+        return <div className="snake" key = {i}
+                style={{
+                  top: sp[0],
+                  left: sp[1]
+                }}
+                ></div>
+      })}
+        
         <div
           className="food"
           style={{
