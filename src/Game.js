@@ -5,19 +5,13 @@ const LEFT = "LEFT";
 const RIGHT = "RIGHT";
 const UP = "UP";
 const DOWN = "DOWN";
-const MOVER = 2;
+const MOVER = 25;
 class Game extends Component {
   componentDidMount() {
-    this.moveSnake();
-    this.moveSnake();
-    this.moveSnake();
-    this.moveSnake();
-    this.moveSnake();
-    this.moveSnake();
-    this.moveSnake();
-    this.moveSnake();
-
-    document.onkeypress = this.handleKeyPress;
+    document.onkeydown = this.handleKeyPress;
+    // setInterval(() => {
+    //   this.moveSnake()
+    // }, 300);
   }
   state = {
     direction: "RIGHT",
@@ -32,16 +26,17 @@ class Game extends Component {
 
       switch (prevState.direction) {
         case LEFT:
-          snakeMouth = [snakeMouth[0] - MOVER, snakeMouth[1]];
-          break;
-        case UP:
           snakeMouth = [snakeMouth[0], snakeMouth[1] - MOVER];
           break;
+        case UP:
+          snakeMouth = [snakeMouth[0] - MOVER, snakeMouth[1]];
+          break;
         case RIGHT:
-          snakeMouth = [snakeMouth[0] + MOVER, snakeMouth[1]];
+          snakeMouth = [snakeMouth[0], snakeMouth[1] + MOVER];
           break;
         case DOWN:
-          snakeMouth = [snakeMouth[0], snakeMouth[1] + MOVER];
+          snakeMouth = [snakeMouth[0] + MOVER, snakeMouth[1]];
+
           break;
         default:
           return prevState;
@@ -56,7 +51,6 @@ class Game extends Component {
 
   handleKeyPress = e => {
     //TODO: condition for checking prevstate
-    this.moveSnake();
     switch (e.keyCode) {
       case 37:
         this.setState({
@@ -81,6 +75,7 @@ class Game extends Component {
       default:
         break;
     }
+    this.moveSnake();
   };
   render() {
     return (
