@@ -6,12 +6,14 @@ const RIGHT = "RIGHT";
 const UP = "UP";
 const DOWN = "DOWN";
 const MOVER = 25;
+const SPEED = 300;
+
 class Game extends Component {
   componentDidMount() {
     document.onkeydown = this.handleKeyPress;
-    // setInterval(() => {
-    //   this.moveSnake()
-    // }, 300);
+     setInterval(() => {
+       this.moveSnake()
+     }, SPEED);
   }
   state = {
     direction: "RIGHT",
@@ -50,26 +52,29 @@ class Game extends Component {
   };
 
   handleKeyPress = e => {
-    //TODO: condition for checking prevstate
     switch (e.keyCode) {
       case 37:
-        this.setState({
-          direction: LEFT
+        this.setState(prevState =>{
+          if(prevState.direction === UP || prevState.direction === DOWN)
+          return {direction: LEFT}
         });
         break;
       case 38:
-        this.setState({
-          direction: UP
+        this.setState(prevState =>{
+          if(prevState.direction === LEFT || prevState.direction === RIGHT)
+          return {direction: UP}
         });
         break;
       case 39:
-        this.setState({
-          direction: RIGHT
+        this.setState(prevState =>{
+          if(prevState.direction === UP || prevState.direction === DOWN)
+          return {direction: RIGHT}
         });
         break;
       case 40:
-        this.setState({
-          direction: DOWN
+        this.setState(prevState =>{
+          if(prevState.direction === LEFT || prevState.direction === RIGHT)
+           return {direction: DOWN}
         });
         break;
       default:
