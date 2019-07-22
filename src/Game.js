@@ -12,14 +12,20 @@ class Game extends Component {
   componentDidMount() {
     document.onkeydown = this.handleKeyPress;
      setInterval(() => {
-       this.moveSnake()
+       this.startGame()
      }, SPEED);
   }
   state = {
-    direction: "RIGHT",
+    direction: RIGHT,
     snakePos: [[0, 0]],
-    foodPos: [[15, 15]]
+    foodPos: [250, 250],
+    game: "ON"
   };
+
+  startGame = () => {
+    this.elongateSnake();
+    this.moveSnake();
+  }
 
   moveSnake = () => {
     this.setState(prevState => {
@@ -43,6 +49,14 @@ class Game extends Component {
         default:
           return prevState;
       }
+
+      //logic to restrict snake movement within game area
+      if(snakeMouth[0]>475 || snakeMouth[0]<0 || snakeMouth[1]>475 || snakeMouth[1]<0 ){
+        return {game:"OVER"}
+      }
+      //logic to not allow snake to overlap with its own snakeBody
+
+      
       snakeBody.push(snakeMouth);
       snakeBody.shift();
       return {
@@ -50,6 +64,26 @@ class Game extends Component {
       };
     });
   };
+
+  elongateSnake = ()=> { 
+    let snakeBody = [...this.state.snakePos];
+    let snakeMouth = snakeBody[snakeBody.length-1];
+    if(snakeMouth[0]===this.state.foodPos[0] && snakeMouth[1]===this.state.foodPos[1]){
+      snakeBody.push(this.state.foodPos);
+      this.setState({
+        snakePos: snakeBody,
+        foodPos: this.getNewFoodPos()
+      })
+    }
+    
+  }
+
+  getNewFoodPos = () => {
+    let x = Math.random() * 475;
+    let y = Math.random() * 475;
+
+    return [x - x%25,y - y%25]
+  }
 
   handleKeyPress = e => {
     switch (e.keyCode) {
@@ -97,8 +131,8 @@ class Game extends Component {
         <div
           className="food"
           style={{
-            top: 250,
-            left: 250
+            top: this.state.foodPos[0],
+            left: this.state.foodPos[1]
           }}
         >
           {" "}
