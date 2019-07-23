@@ -24,7 +24,7 @@ class Game extends Component {
   };
 
   startGame = () => {
-    this.elongateSnake();
+    //this.elongateSnake();
     this.moveSnake();
   }
 
@@ -59,6 +59,16 @@ class Game extends Component {
       if(this.isSnakeTouchingItself(snakeBody, snakeMouth)){
         return {game:"OVER"}
       }
+      
+      //logic to check if food has been eaten
+      if(snakeMouth[0]===this.state.foodPos[0] && snakeMouth[1]===this.state.foodPos[1]){
+        snakeBody.push(prevState.foodPos)
+          return {
+          snakePos: snakeBody,
+          foodPos: this.getNewFoodPos(snakeBody),
+          score: prevState.score+1
+          }
+      }
 
       
       snakeBody.push(snakeMouth);
@@ -68,24 +78,6 @@ class Game extends Component {
       };
     });
   };
-
-  elongateSnake = ()=> { 
-    //let snakeBody = [...this.state.snakePos];
-    let snakeBody = this.state.snakePos
-    let snakeMouth = snakeBody[snakeBody.length-1];
-   
-    if(snakeMouth[0]===this.state.foodPos[0] && snakeMouth[1]===this.state.foodPos[1]){
-      this.setState(prevState=>{
-        snakeBody.push(prevState.foodPos);
-        let newFoodPos = this.getNewFoodPos(snakeBody);
-        return {
-          snakePos: snakeBody,
-          foodPos: newFoodPos,
-          score: prevState.score+1
-        }
-      })     
-    }    
-  }
 
   isSnakeTouchingItself = (snakeBody, snakeMouth) => {
     for(let pos of snakeBody){
