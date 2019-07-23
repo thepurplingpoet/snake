@@ -6,7 +6,7 @@ const RIGHT = "RIGHT";
 const UP = "UP";
 const DOWN = "DOWN";
 const MOVER = 25;
-const SPEED = 300;
+const SPEED = 200;
 
 class Game extends Component {
   componentDidMount() {
@@ -17,9 +17,10 @@ class Game extends Component {
   }
   state = {
     direction: RIGHT,
-    snakePos: [[0, 0]],
+    snakePos: [[0, 0], [0,25], [0, 50]],
     foodPos: [250, 250],
-    game: "ON"
+    game: "ON",
+    score : 0
   };
 
   startGame = () => {
@@ -55,6 +56,9 @@ class Game extends Component {
         return {game:"OVER"}
       }
       //logic to not allow snake to overlap with its own snakeBody
+      if(this.isSnakeTouchingItself(snakeBody, snakeMouth)){
+        return {game:"OVER"}
+      }
 
       
       snakeBody.push(snakeMouth);
@@ -66,18 +70,28 @@ class Game extends Component {
   };
 
   elongateSnake = ()=> { 
-    let snakeBody = [...this.state.snakePos];
+    //let snakeBody = [...this.state.snakePos];
+    let snakeBody = this.state.snakePos
     let snakeMouth = snakeBody[snakeBody.length-1];
+   
     if(snakeMouth[0]===this.state.foodPos[0] && snakeMouth[1]===this.state.foodPos[1]){
-      snakeBody.push(this.state.foodPos);
-      let newFoodPos = this.getNewFoodPos(snakeBody);
-      console.log("NEW",newFoodPos)
-      this.setState({
-        snakePos: snakeBody,
-        foodPos: newFoodPos
-      })
+      this.setState(prevState=>{
+        snakeBody.push(prevState.foodPos);
+        let newFoodPos = this.getNewFoodPos(snakeBody);
+        return {
+          snakePos: snakeBody,
+          foodPos: newFoodPos,
+          score: prevState.score+1
+        }
+      })     
+    }    
+  }
+
+  isSnakeTouchingItself = (snakeBody, snakeMouth) => {
+    for(let pos of snakeBody){
+      if(JSON.stringify(snakeMouth)===JSON.stringify(pos))
+      return true;
     }
-    
   }
 
   getNewFoodPos = (snake) => {
