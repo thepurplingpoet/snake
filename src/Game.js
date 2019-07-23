@@ -7,37 +7,38 @@ const UP = "UP";
 const DOWN = "DOWN";
 const MOVER = 25;
 const SPEED = 150;
+const ON = "ON";
+const OVER = "OVER";
 
 class Game extends Component {
   componentDidMount() {
     document.onkeydown = this.handleKeyPress;
-     setInterval(() => {
-       this.startGame()
-     }, SPEED);
+    setInterval(() => {
+      this.startGame();
+    }, SPEED);
   }
 
-  componentDidUpdate(){
-    if(this.state.game!=="ON"){
+  componentDidUpdate() {
+    if (this.state.game !== ON) {
       document.onkeydown = this.doNothing;
-    }
-    else{
+    } else {
       document.onkeydown = this.handleKeyPress;
     }
   }
 
-  doNothing = () => {}
-  
+  doNothing = () => {};
+
   state = {
     direction: RIGHT,
-    snakePos: [[0, 0], [0,25], [0, 50]],
+    snakePos: [[0, 0], [0, 25], [0, 50]],
     foodPos: [250, 250],
     game: "ON",
-    score : 0
+    score: 0
   };
 
   startGame = () => {
     this.moveSnake();
-  }
+  };
 
   moveSnake = () => {
     this.setState(prevState => {
@@ -62,26 +63,23 @@ class Game extends Component {
           return prevState;
       }
 
-      //logic to restrict snake movement within game area
-      if(snakeMouth[0]>475 || snakeMouth[0]<0 || snakeMouth[1]>475 || snakeMouth[1]<0 ){
-        return {game:"OVER"}
-      }
-      //logic to not allow snake to overlap with its own snakeBody
-      if(this.isSnakeTouchingItself(snakeBody, snakeMouth)){
-        return {game:"OVER"}
+      if (this.isSnakeCrossingBorder(snakeMouth)) {
+        return { game: OVER };
       }
       
-      //logic to check if food has been eaten
-      if(snakeMouth[0]===this.state.foodPos[0] && snakeMouth[1]===this.state.foodPos[1]){
-        snakeBody.push(prevState.foodPos)
-          return {
-          snakePos: snakeBody,
-          foodPos: this.getNewFoodPos(snakeBody),
-          score: prevState.score+1
-          }
+      if (this.isSnakeTouchingItself(snakeBody, snakeMouth)) {
+        return { game: OVER };
       }
 
-      
+      if (this.isFoodEaten(snakeMouth)) {
+        snakeBody.push(prevState.foodPos);
+        return {
+          snakePos: snakeBody,
+          foodPos: this.getNewFoodPos(snakeBody),
+          score: prevState.score + 1
+        };
+      }
+
       snakeBody.push(snakeMouth);
       snakeBody.shift();
       return {
@@ -90,62 +88,76 @@ class Game extends Component {
     });
   };
 
-  isSnakeTouchingItself = (snakeBody, snakeMouth) => {
-    for(let pos of snakeBody){
-      if(JSON.stringify(snakeMouth)===JSON.stringify(pos))
-      return true;
-    }
-  }
+  isSnakeCrossingBorder = snakeMouth => {
+    return (
+      snakeMouth[0] > 475 ||
+      snakeMouth[0] < 0 ||
+      snakeMouth[1] > 475 ||
+      snakeMouth[1] < 0
+    );
+  };
 
-  getNewFoodPos = (snake) => {
+  isFoodEaten = snakeMouth => {
+    return (
+      snakeMouth[0] === this.state.foodPos[0] &&
+      snakeMouth[1] === this.state.foodPos[1]
+    );
+  };
+
+  isSnakeTouchingItself = (snakeBody, snakeMouth) => {
+    for (let pos of snakeBody) {
+      if (JSON.stringify(snakeMouth) === JSON.stringify(pos)) return true;
+    }
+  };
+
+  getNewFoodPos = snake => {
     let pos = this.getRandomPos();
 
-    while(this.isvalidPos(snake,pos)){
+    while (this.isvalidPos(snake, pos)) {
       pos = this.getRandomPos();
     }
 
     return pos;
-    
-  }
+  };
 
   isvalidPos = (posA, posB) => {
     let pos1 = JSON.stringify(posA);
     let pos2 = JSON.stringify(posB);
 
-    return pos1.indexOf(pos2)>0;
-  }
+    return pos1.indexOf(pos2) > 0;
+  };
 
   getRandomPos = () => {
     let x = Math.random() * 475;
     let y = Math.random() * 475;
 
-    return [x - x%25,y - y%25]
-  }
+    return [x - (x % 25), y - (y % 25)];
+  };
 
   handleKeyPress = e => {
     switch (e.keyCode) {
       case 37:
-        this.setState(prevState =>{
-          if(prevState.direction === UP || prevState.direction === DOWN)
-          return {direction: LEFT}
+        this.setState(prevState => {
+          if (prevState.direction === UP || prevState.direction === DOWN)
+            return { direction: LEFT };
         });
         break;
       case 38:
-        this.setState(prevState =>{
-          if(prevState.direction === LEFT || prevState.direction === RIGHT)
-          return {direction: UP}
+        this.setState(prevState => {
+          if (prevState.direction === LEFT || prevState.direction === RIGHT)
+            return { direction: UP };
         });
         break;
       case 39:
-        this.setState(prevState =>{
-          if(prevState.direction === UP || prevState.direction === DOWN)
-          return {direction: RIGHT}
+        this.setState(prevState => {
+          if (prevState.direction === UP || prevState.direction === DOWN)
+            return { direction: RIGHT };
         });
         break;
       case 40:
-        this.setState(prevState =>{
-          if(prevState.direction === LEFT || prevState.direction === RIGHT)
-           return {direction: DOWN}
+        this.setState(prevState => {
+          if (prevState.direction === LEFT || prevState.direction === RIGHT)
+            return { direction: DOWN };
         });
         break;
       default:
@@ -157,45 +169,49 @@ class Game extends Component {
   restart = () => {
     this.setState({
       direction: RIGHT,
-      snakePos: [[0, 0], [0,25], [0, 50]],
+      snakePos: [[0, 0], [0, 25], [0, 50]],
       foodPos: [250, 250],
       game: "ON",
-      score : 0
-    })
-  }
+      score: 0
+    });
+  };
 
   render() {
     return (
       <div className="box">
-      {this.state.snakePos.map((sp, i) => {
-        return <div className="snake" key = {i}
-                style={{
-                  top: sp[0],
-                  left: sp[1]
-                }}
-                ></div>
-      })}
+        {this.state.snakePos.map((sp, i) => {
+          return (
+            <div
+              className="snake"
+              key={i}
+              style={{
+                top: sp[0],
+                left: sp[1]
+              }}
+            />
+          );
+        })}
 
-      {this.state.game==="OVER" && <div><div className="game-over">
-          GAME OVER!!!!
-        <div className="score">
-          Your Score was {this.state.score}
-        </div>
-
-        <div className="restart">
-          <button className="restart-button" onClick={this.restart}>Restart Game</button>
-        </div>
-      </div>
-        </div>}
+        {this.state.game === OVER && (
+          <div>
+            <div className="game-over">
+              GAME OVER!!!!
+              <div className="score">Your Score was {this.state.score}</div>
+              <div className="restart">
+                <button className="restart-button" onClick={this.restart}>
+                  Restart Game
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         <div
           className="food"
           style={{
             top: this.state.foodPos[0],
             left: this.state.foodPos[1]
           }}
-        >
-          {" "}
-        </div>
+        />
       </div>
     );
   }
