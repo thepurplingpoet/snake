@@ -31,7 +31,9 @@
 
 .game-over {
   position: absolute;
+  background: #02ccba;
   top: 200px;
   left: 200px;
+  z-index: 1;
 
 }

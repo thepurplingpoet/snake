@@ -6,7 +6,7 @@ const RIGHT = "RIGHT";
 const UP = "UP";
 const DOWN = "DOWN";
 const MOVER = 25;
-const SPEED = 200;
+const SPEED = 150;
 
 class Game extends Component {
   componentDidMount() {
@@ -15,6 +15,18 @@ class Game extends Component {
        this.startGame()
      }, SPEED);
   }
+
+  componentDidUpdate(){
+    if(this.state.game!=="ON"){
+      document.onkeydown = this.doNothing;
+    }
+    else{
+      document.onkeydown = this.handleKeyPress;
+    }
+  }
+
+  doNothing = () => {}
+  
   state = {
     direction: RIGHT,
     snakePos: [[0, 0], [0,25], [0, 50]],
@@ -142,6 +154,15 @@ class Game extends Component {
     this.moveSnake();
   };
 
+  restart = () => {
+    this.setState({
+      direction: RIGHT,
+      snakePos: [[0, 0], [0,25], [0, 50]],
+      foodPos: [250, 250],
+      game: "ON",
+      score : 0
+    })
+  }
 
   render() {
     return (
@@ -155,7 +176,7 @@ class Game extends Component {
                 ></div>
       })}
 
-      <div className="game-over">
+      {this.state.game==="OVER" && <div><div className="game-over">
           GAME OVER!!!!
         <div className="score">
           Your Score was {this.state.score}
@@ -165,7 +186,7 @@ class Game extends Component {
           <button className="restart-button" onClick={this.restart}>Restart Game</button>
         </div>
       </div>
-        
+        </div>}
         <div
           className="food"
           style={{
