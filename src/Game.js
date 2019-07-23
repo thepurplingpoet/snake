@@ -70,15 +70,35 @@ class Game extends Component {
     let snakeMouth = snakeBody[snakeBody.length-1];
     if(snakeMouth[0]===this.state.foodPos[0] && snakeMouth[1]===this.state.foodPos[1]){
       snakeBody.push(this.state.foodPos);
+      let newFoodPos = this.getNewFoodPos(snakeBody);
+      console.log("NEW",newFoodPos)
       this.setState({
         snakePos: snakeBody,
-        foodPos: this.getNewFoodPos()
+        foodPos: newFoodPos
       })
     }
     
   }
 
-  getNewFoodPos = () => {
+  getNewFoodPos = (snake) => {
+    let pos = this.getRandomPos();
+
+    while(this.isvalidPos(snake,pos)){
+      pos = this.getRandomPos();
+    }
+
+    return pos;
+    
+  }
+
+  isvalidPos = (posA, posB) => {
+    let pos1 = JSON.stringify(posA);
+    let pos2 = JSON.stringify(posB);
+
+    return pos1.indexOf(pos2)>0;
+  }
+
+  getRandomPos = () => {
     let x = Math.random() * 475;
     let y = Math.random() * 475;
 
@@ -116,6 +136,8 @@ class Game extends Component {
     }
     this.moveSnake();
   };
+
+
   render() {
     return (
       <div className="box">
