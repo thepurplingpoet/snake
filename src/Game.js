@@ -24,7 +24,6 @@ class Game extends Component {
   };
 
   startGame = () => {
-    //this.elongateSnake();
     this.moveSnake();
   }
 
@@ -155,6 +154,17 @@ class Game extends Component {
                 }}
                 ></div>
       })}
+
+      <div className="game-over">
+          GAME OVER!!!!
+        <div className="score">
+          Your Score was {this.state.score}
+        </div>
+
+        <div className="restart">
+          <button className="restart-button" onClick={this.restart}>Restart Game</button>
+        </div>
+      </div>
         
         <div
           className="food"

@@ -28,3 +28,10 @@
   height: 25px;
   background: black;
 }
+
+.game-over {
+  position: absolute;
+  top: 200px;
+  left: 200px;
+
+}
